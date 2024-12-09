@@ -1,6 +1,8 @@
 {
     "id": "b29fd836-c6f4-4a2b-a9ff-d6de469f3c8e",
-    "namea": "TEST EVENT",
+    "name": "TEST EVENT",
+    "image": "test_image_path.png",
+    "comments": "TEST COMMENT",
     "venue": "TEST VENUE",
     "address": "TEST ADDRESS",
     "contactname": "TEST CONTACT NAME",
