@@ -10,12 +10,14 @@ use chrono::NaiveDateTime;
 use uuid::Uuid;
 use diesel::prelude::*;
 #[derive(Clone, Debug, Identifiable, Queryable, QueryableByName, Insertable, Serialize, Deserialize)]
-#[diesel(table_name = event)]
+#[diesel(table_name = events)]
 pub struct Event {
     pub id: Uuid,
-    pub name: Option<String>,
-    pub venue: Option<String>,
+    pub name: String,
+    pub venue: String,
     pub address: Option<String>,
+    pub image: Option<String>,
+    pub comments: Option<String>,
     pub contactname: Option<String>,
     pub starts_at: NaiveDateTime,
     pub ends_at: NaiveDateTime,
