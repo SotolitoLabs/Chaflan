@@ -1,7 +1,7 @@
 use crate::claims::Claims;
 use crate::db::*;
 use crate::models::Event;
-use crate::schema::event::dsl::*;
+use crate::schema::events::dsl::*;
 use diesel::prelude::*;
 use rocket::response::status::NotFound;
 use rocket::response::{status::Created, Debug};
@@ -21,7 +21,7 @@ pub async fn add(arg_event: Json<Event>, user: Claims, tdb: EventDB) -> Result<C
     let ret_id = new_event.id.clone();
     let event_id = tdb
         .run(move |conn| {
-            diesel::insert_into(crate::schema::event::dsl::event)
+            diesel::insert_into(crate::schema::events::dsl::events)
                 .values(&new_event)
                 .execute(conn)
                 .expect("Error saving new event");
@@ -38,7 +38,7 @@ pub async fn add(arg_event: Json<Event>, user: Claims, tdb: EventDB) -> Result<C
 pub async fn list(tdb: EventDB) -> Template {
     let results = tdb
         .run(move |connection| {
-            crate::schema::event::dsl::event
+            crate::schema::events::dsl::events
                 .load::<Event>(connection)
                 .expect("Error loading events")
         })
@@ -47,11 +47,29 @@ pub async fn list(tdb: EventDB) -> Template {
 }
 
 /// Get a event and returns it as a JSON object
-#[get("/<eventid>")]
-pub async fn get(eventid: Uuid, tdb: EventDB) -> Result<Json<Vec<Event>>, NotFound<String>> {
+#[get("/<eventid>", format="json", rank = 1)]
+pub async fn get_json(eventid: Uuid, tdb: EventDB) -> Result<Json<Vec<Event>>, NotFound<String>> {
     let results = tdb
         .run(move |connection| {
-            crate::schema::event::dsl::event
+            crate::schema::events::dsl::events
+                .filter(id.eq(eventid))
+                .load::<Event>(connection)
+                .expect("Error loading events")
+        })
+        .await;
+    if results.len() > 0 {
+        Ok(Json(results))
+    } else {
+        Err(NotFound(format!("Could not find event: {}", eventid)))
+    }
+}
+
+/// Get a event and returns it as a JSON object
+#[get("/<eventid>", format="text/html", rank=2)]
+pub async fn get_html(eventid: Uuid, tdb: EventDB) -> Result<Json<Vec<Event>>, NotFound<String>> {
+    let results = tdb
+        .run(move |connection| {
+            crate::schema::events::dsl::events
                 .filter(id.eq(eventid))
                 .load::<Event>(connection)
                 .expect("Error loading events")
@@ -73,7 +91,7 @@ pub async fn delete(
 ) -> Result<Json<String>, NotFound<String>> {
     let results = tdb
         .run(move |connection| {
-            diesel::delete(crate::schema::event::dsl::event.filter(id.eq(eventid)))
+            diesel::delete(crate::schema::events::dsl::events.filter(id.eq(eventid)))
                 .execute(connection)
         })
         .await;
