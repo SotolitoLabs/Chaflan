@@ -23,7 +23,8 @@ fn rocket() -> _ {
 		.mount("/", routes![auth::login])
         .mount(
             "/events",
-            routes![events::add, events::delete, events::get, events::list],
+            routes![events::add, events::delete, events::get_json,
+                events::get_html, events::list],
         )
         .mount("/public", FileServer::from(STATIC_FILES_DIR))
         .attach(Template::fairing())
