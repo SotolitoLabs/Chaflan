@@ -1,4 +1,6 @@
 # TEST VALUES, set the proper values here
+[global]
+address = "0.0.0.0"
 [global.databases.postgres]
 url = "postgres://postgres:prueba123@127.0.0.1:9432/postgres"
 timeout = 5
